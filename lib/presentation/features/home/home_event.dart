@@ -5,3 +5,18 @@ class FetchProductEvent extends BaseEvent {
   List<Object?> get props => [];
 
 }
+
+class LoadCartOnAppbar extends BaseEvent{
+  @override
+  List<Object?> get props => [];
+}
+
+class AddToCartEvent extends BaseEvent{
+
+  late String productId;
+
+  AddToCartEvent({required this.productId});
+
+  @override
+  List<Object?> get props => [];
+}

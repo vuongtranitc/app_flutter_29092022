@@ -5,4 +5,5 @@ class ApiConstant {
   static final String SIGN_IN = "user/sign-in";
   static final String SIGN_UP = "user/sign-up";
   static final String PRODUCTS = "/product";
+  static final String CART = "/cart";
 }

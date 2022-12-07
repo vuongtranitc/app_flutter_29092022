@@ -56,33 +56,71 @@ class _HomeContainerState extends State<HomeContainer> {
     super.initState();
     bloc = context.read();
     bloc.eventSink.add(FetchProductEvent());
+    bloc.eventSink.add(LoadCartOnAppbar());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      StreamBuilder<List<Product>>(
-          initialData: [],
-          stream: bloc.products,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text("Data is error");
-            } else if (snapshot.hasData) {
-              return ListView.builder(
-                  itemCount: snapshot.data?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    return _buildItemFood(snapshot.data?[index]);
-                  });
-            } else {
-              return Container();
-            }
-          }),
-      LoadingWidget(child: Container(), bloc: bloc),
-    ]);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text("Foods App"),
+        ),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: (){},
+                icon: const Icon(Icons.shopping_cart, color: Colors.orange,),
+              ),
+              Positioned(
+                  right: 30,
+                  top: 10,
+                  child: StreamBuilder<int>(
+                    stream: bloc.cartQuantity,
+                    builder: (context, snapshot) {
+                      switch(snapshot.connectionState){
+                        case ConnectionState.waiting:
+                          return const Text("...");
+                        case ConnectionState.active:
+                          return Text((snapshot.data).toString(),
+                              style: const TextStyle( color: Colors.white,
+                                backgroundColor: Colors.black,
+                              ));
+                        default:
+                          return const Text("");
+                      }
+                    },)
+              )
+            ],
+          )
+        ],
+      ),
+      body: Stack(
+          children: [
+            StreamBuilder<List<Product>>(
+              initialData: const [],
+              stream: bloc.products,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Text("Data is error");
+                } else if (snapshot.hasData) {
+                  return ListView.builder(
+                      itemCount: snapshot.data?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return _buildItemFood(snapshot.data?[index]);
+                      });
+                } else {
+                  return Container();
+                }
+              }),
+            LoadingWidget(child: Container(), bloc: bloc)
+      ]),
+    );
   }
 
-  Widget _buildItemFood(Product? product) {
-    if (product == null) return Container();
+    Widget _buildItemFood(Product? product) {
+      if (product == null) return Container();
     return Container(
       height: 135,
       child: Card(
@@ -114,7 +152,9 @@ class _HomeContainerState extends State<HomeContainer> {
                       Text("Giá : ${formatPrice(product.price)} đ",
                           style: TextStyle(fontSize: 12)),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          bloc.eventSink.add(AddToCartEvent(productId: product.id.toString()));
+                        },
                         style: ButtonStyle(
                             backgroundColor:
                                 MaterialStateProperty.resolveWith((states) {
