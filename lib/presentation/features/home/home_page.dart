@@ -5,6 +5,7 @@ import 'package:appp_sale_29092022/common/widgets/loading_widget.dart';
 import 'package:appp_sale_29092022/data/datasources/remote/api_request.dart';
 import 'package:appp_sale_29092022/data/model/product.dart';
 import 'package:appp_sale_29092022/data/repositories/product_repository.dart';
+import 'package:appp_sale_29092022/presentation/features/cart/cart_page.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_bloc.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_event.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,9 @@ class _HomeContainerState extends State<HomeContainer> {
           Stack(
             children: [
               IconButton(
-                onPressed: (){},
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()));
+                },
                 icon: const Icon(Icons.shopping_cart, color: Colors.orange,),
               ),
               Positioned(
@@ -127,7 +130,7 @@ class _HomeContainerState extends State<HomeContainer> {
         elevation: 5,
         shadowColor: Colors.blueGrey,
         child: Container(
-          padding: EdgeInsets.only(top: 5, bottom: 5),
+          padding: const EdgeInsets.only(top: 5, bottom: 5),
           child: Row(
             children: [
               ClipRRect(
@@ -147,10 +150,10 @@ class _HomeContainerState extends State<HomeContainer> {
                         child: Text(product.name.toString(),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: 16)),
+                            style: const TextStyle(fontSize: 16)),
                       ),
                       Text("Giá : ${formatPrice(product.price)} đ",
-                          style: TextStyle(fontSize: 12)),
+                          style: const TextStyle(fontSize: 12)),
                       ElevatedButton(
                         onPressed: () {
                           bloc.eventSink.add(AddToCartEvent(productId: product.id.toString()));
@@ -159,17 +162,17 @@ class _HomeContainerState extends State<HomeContainer> {
                             backgroundColor:
                                 MaterialStateProperty.resolveWith((states) {
                               if (states.contains(MaterialState.pressed)) {
-                                return Color.fromARGB(200, 240, 102, 61);
+                                return const Color.fromARGB(200, 240, 102, 61);
                               } else {
-                                return Color.fromARGB(230, 240, 102, 61);
+                                return const Color.fromARGB(230, 240, 102, 61);
                               }
                             }),
                             shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
+                                const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                         Radius.circular(10))))),
                         child:
-                            Text("Add To Cart", style: TextStyle(fontSize: 14)),
+                            const Text("Add To Cart", style: TextStyle(fontSize: 14)),
                       ),
                     ],
                   ),

@@ -53,6 +53,7 @@ class ProductRepository {
       return products ?? [];
 
     } on DioError catch (dioError) {
+      print("Chay vao catch");
       return [];
     } catch(e) {
       return [];
