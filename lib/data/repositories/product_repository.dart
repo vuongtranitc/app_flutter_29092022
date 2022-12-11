@@ -36,47 +36,6 @@ class ProductRepository {
     return completer.future;
   }
 
-  Future<List<Products>> getCartProducts() async{
-    String apiUrl = "${VariableConstant.apiUrl}/cart";
-    String token = AppCache.getString(VariableConstant.TOKEN);
-    _dio.options.headers["Authorization"] = "Bearer $token";
-    try {
-
-      Response response =  await _dio.get(apiUrl);
-
-      // TODO: Improve use Isolate
-
-
-      CartData cartData = CartData.fromJson((response.data["data"]));
-      List<Products>? products = cartData.products;
-
-      return products ?? [];
-
-    } on DioError catch (dioError) {
-      print("Chay vao catch");
-      return [];
-    } catch(e) {
-      return [];
-    }
-  }
-
-  Future<String> addToCart(String product_id) async{
-    String apiUrl ="${VariableConstant.apiUrl}/cart/add";
-    String token = AppCache.getString(VariableConstant.TOKEN);
-    _dio.options.headers["Authorization"] = "Bearer $token";
-    try {
-
-      Response response =  await _dio.post(apiUrl,data: {'id_product':product_id});
-
-      // TODO: Improve use Isolate
-
-      return "success";
-
-    } on DioError catch (dioError) {
-      return dioError.toString();
-    } catch(e) {
-      return e.toString();
-    }
-  }
+  
 
 }

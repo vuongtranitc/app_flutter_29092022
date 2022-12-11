@@ -2,21 +2,27 @@ import 'dart:async';
 
 import 'package:appp_sale_29092022/common/bases/base_bloc.dart';
 import 'package:appp_sale_29092022/common/bases/base_event.dart';
+import 'package:appp_sale_29092022/common/constants/variable_constant.dart';
+import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
 import 'package:appp_sale_29092022/data/datasources/remote/dto/app_resource.dart';
 import 'package:appp_sale_29092022/data/datasources/remote/dto/product_dto.dart';
 import 'package:appp_sale_29092022/data/model/cart_result_model.dart';
 import 'package:appp_sale_29092022/data/model/product.dart';
+import 'package:appp_sale_29092022/data/repositories/cart_repository.dart';
 import 'package:appp_sale_29092022/data/repositories/product_repository.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_event.dart';
+import 'package:flutter/cupertino.dart';
 
 class HomeBloc extends BaseBloc {
   final ProductRepository _repo = ProductRepository();
+  final CartRepository _cartRepo = CartRepository();
   final StreamController<List<Product>> _listProductsController = StreamController();
   final StreamController<int> _cartQuantityStreamController = StreamController<int>();
   final StreamController<bool> _statusAddToCartController = StreamController<bool>();
   Stream<List<Product>> get products => _listProductsController.stream;
   Stream<int> get cartQuantity => _cartQuantityStreamController.stream;
   Stream<bool> get getStatusAddToCart => _statusAddToCartController.stream;
+  late int cartQty;
 
   HomeBloc(){
     ProductRepository repo;
@@ -62,7 +68,17 @@ class HomeBloc extends BaseBloc {
   }
 
   void _getCartOnAppbar() async{
-    var products = _repo.getCartProducts();
+
+    String cartId = AppCache.getString(VariableConstant.cartId);
+    if(cartId.isEmpty){
+      var getCartId = _cartRepo.getCartId();
+      getCartId.then( (res) {
+        AppCache.setString(key: VariableConstant.cartId,value: res);
+      },
+        onError: (err) => cartId = "cartId"
+      );
+    }
+    var products = _cartRepo.getCartProducts();
     _statusAddToCartController.add(true);
     products.then((res) {
       List<Products> items = res;
@@ -74,12 +90,15 @@ class HomeBloc extends BaseBloc {
       }
       _cartQuantityStreamController.sink.add(count);
       _statusAddToCartController.add(false);
+
     },
         onError: (err) {
           messageSink.add(err.toString());
           _statusAddToCartController.add(false);
         });
+
   }
+
 
   void _addToCart(AddToCartEvent event){
     if(event.productId.isEmpty){
@@ -88,7 +107,7 @@ class HomeBloc extends BaseBloc {
       return;
     }
     loadingSink.add(true);
-    _repo.addToCart(event.productId).then((res) {
+    _cartRepo.addToCart(event.productId).then((res) {
       dispatch(LoadCartOnAppbar());
       Future.delayed(const Duration(seconds: 1), () {
         loadingSink.add(false);

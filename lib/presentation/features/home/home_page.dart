@@ -72,7 +72,14 @@ class _HomeContainerState extends State<HomeContainer> {
             children: [
               IconButton(
                 onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()))
+                  .then((value) {
+                    bloc.eventSink.add(LoadCartOnAppbar());
+                    bloc.loadingSink.add(true);
+                    Future.delayed(const Duration(seconds: 1), (){
+                      bloc.loadingSink.add(false);
+                    });
+                  });
                 },
                 icon: const Icon(Icons.shopping_cart, color: Colors.orange,),
               ),
@@ -136,7 +143,7 @@ class _HomeContainerState extends State<HomeContainer> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Image.network(ApiConstant.BASE_URL + product.img,
-                    width: 150, height: 120, fit: BoxFit.fill),
+                    width: 150, height: 120, fit: BoxFit.cover),
               ),
               Expanded(
                 child: Padding(
