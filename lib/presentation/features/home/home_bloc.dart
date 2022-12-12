@@ -68,9 +68,9 @@ class HomeBloc extends BaseBloc {
   }
 
   void _getCartOnAppbar() async{
-
     String cartId = AppCache.getString(VariableConstant.cartId);
-    if(cartId.isEmpty){
+
+    if(cartId.isEmpty || cartId == "cartId"){
       var getCartId = _cartRepo.getCartId();
       getCartId.then( (res) {
         AppCache.setString(key: VariableConstant.cartId,value: res);
@@ -78,6 +78,7 @@ class HomeBloc extends BaseBloc {
         onError: (err) => cartId = "cartId"
       );
     }
+
     var products = _cartRepo.getCartProducts();
     _statusAddToCartController.add(true);
     products.then((res) {

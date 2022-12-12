@@ -23,3 +23,13 @@ class UpdateItemCartEvent extends BaseEvent{
   @override
   List<Object?> get props => [];
 }
+
+class ConfirmCart extends BaseEvent{
+
+  late String cartId;
+
+  ConfirmCart({required this.cartId});
+
+  @override
+  List<Object?> get props => [];
+}

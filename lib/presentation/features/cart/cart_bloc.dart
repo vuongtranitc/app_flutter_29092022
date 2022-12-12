@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:appp_sale_29092022/common/bases/base_bloc.dart';
 import 'package:appp_sale_29092022/common/bases/base_event.dart';
 import 'package:appp_sale_29092022/common/constants/variable_constant.dart';
@@ -16,10 +15,12 @@ class CartBloc extends BaseBloc{
   final StreamController<int> _statusStreamController = StreamController();
   final StreamController<int> _totalCartStreamController = StreamController();
   final StreamController<bool> _statusUpdateCartController = StreamController();
+  final StreamController<bool> _statusConfirmCartController = StreamController();
   Stream<List<Products>> get productsStream => _productsStreamController.stream;
   Stream<int> get statusStream => _statusStreamController.stream;
   Stream<int> get totalCartStream => _totalCartStreamController.stream;
   Stream<bool> get statusUpdateCartStream => _statusUpdateCartController.stream;
+  Stream<bool> get statusConfirmCartStream => _statusUpdateCartController.stream;
   final CartRepository _repo = CartRepository();
 
 
@@ -31,6 +32,9 @@ class CartBloc extends BaseBloc{
         break;
       case UpdateItemCartEvent:
         _updateCart(event as UpdateItemCartEvent);
+        break;
+      case ConfirmCart:
+        _confirmCart(event as ConfirmCart);
         break;
     }
   }
@@ -71,6 +75,28 @@ class CartBloc extends BaseBloc{
         });
   }
 
+  void _confirmCart(ConfirmCart event){
+    _statusConfirmCartController.sink.add(false);
+    loadingSink.add(true);
+    var confirmCart = _repo.ConfirmCart(event.cartId);
+    confirmCart.then((res) {
+      _statusConfirmCartController.sink.add(res);
+      AppCache.setString(key: VariableConstant.cartId,value: "cartId");
+      Future.delayed(const Duration(seconds: 1), () {
+        loadingSink.add(false);
+      });
+    }, onError: (err) {
+        messageSink.add(err);
+        Future.delayed(const Duration(seconds: 1), () => loadingSink.add(false));
+      }
+    );
+  }
+
+  Future<bool> confirmCartAsync(ConfirmCart event) async{
+    loadingSink.add(true);
+    return await _repo.ConfirmCart(event.cartId);
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -79,6 +105,7 @@ class CartBloc extends BaseBloc{
     _statusStreamController.close();
     _totalCartStreamController.close();
     _statusUpdateCartController.close();
+    _statusConfirmCartController.close();
   }
 
 }

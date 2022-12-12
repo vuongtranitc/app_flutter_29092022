@@ -5,10 +5,13 @@ import 'package:appp_sale_29092022/common/widgets/loading_widget.dart';
 import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
 import 'package:appp_sale_29092022/data/model/cart_result_model.dart';
 import 'package:appp_sale_29092022/presentation/features/cart/cart_bloc.dart';
+import 'package:appp_sale_29092022/presentation/features/cart/cart_comform.dart';
 import 'package:appp_sale_29092022/presentation/features/cart/cart_event.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_bloc.dart';
+import 'package:appp_sale_29092022/presentation/features/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -48,8 +51,6 @@ class _CartContainerState extends State<CartContainer> {
     homeBloc = HomeBloc();
     bloc.eventSink.add(GetCartEvent());
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -135,8 +136,20 @@ class _CartContainerState extends State<CartContainer> {
                                     ),
                                     child: TextButton(
                                       child: const Text("Tạo đơn hàng", textAlign: TextAlign.center,),
-                                      onPressed: (){},
-                                    ),
+                                      onPressed: () {
+                                        var res = bloc.confirmCartAsync(ConfirmCart(cartId: cartId));
+                                        res.then((value) {
+                                          if(value){
+                                            AppCache.setString(key: VariableConstant.cartId,value: "cartId");
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(builder: (BuildContext context) => const CartConform()),
+                                                ModalRoute.withName('/')
+                                            );
+                                          }
+                                        });
+                                      },
+                                    )
                                   )
                               )
                             ],
@@ -218,6 +231,7 @@ class _CartContainerState extends State<CartContainer> {
                                   child: OutlinedButton(
                                     child: const Icon(Icons.add),
                                     onPressed: (){
+                                      print(cartId);
                                       int quantity = (item.quantity ?? 0) + 1;
                                       bloc.eventSink.add(UpdateItemCartEvent(productId: item.sId ?? "", cartId: cartId, quantity: quantity));
                                     },

@@ -1,7 +1,9 @@
 import 'package:appp_sale_29092022/common/bases/base_widget.dart';
 import 'package:appp_sale_29092022/common/constants/api_constant.dart';
+import 'package:appp_sale_29092022/common/constants/variable_constant.dart';
 import 'package:appp_sale_29092022/common/utils/extension.dart';
 import 'package:appp_sale_29092022/common/widgets/loading_widget.dart';
+import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
 import 'package:appp_sale_29092022/data/datasources/remote/api_request.dart';
 import 'package:appp_sale_29092022/data/model/product.dart';
 import 'package:appp_sale_29092022/data/repositories/product_repository.dart';

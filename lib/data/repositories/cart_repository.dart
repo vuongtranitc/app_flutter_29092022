@@ -23,7 +23,6 @@ class CartRepository {
       return cartId;
 
     } on DioError catch (dioError) {
-      print("Chay vao catch");
       return "";
     } catch(e) {
       return "";
@@ -39,16 +38,14 @@ class CartRepository {
       Response response =  await _dio.get(apiUrl);
 
       // TODO: Improve use Isolate
-
+      if(response.data["result"] == 0)
+        return [];
 
       CartData cartData = CartData.fromJson((response.data["data"]));
       List<Products>? products = cartData.products;
 
       return products ?? [];
 
-    } on DioError catch (dioError) {
-      print("Chay vao catch");
-      return [];
     } catch(e) {
       return [];
     }
@@ -86,10 +83,25 @@ class CartRepository {
       return true;
     }
     catch (e){
-      print(e);
       return false;
     }
 
   }
+
+  Future<bool> ConfirmCart(String cartId) async{
+      String apiURL = "${VariableConstant.apiUrl}/cart/conform";
+      String token = AppCache.getString(VariableConstant.TOKEN);
+      _dio.options.headers["Authorization"] = "Bearer $token";
+      try{
+        await _dio.post(apiURL, data: {
+          "id_cart" : cartId,
+          "status" : false
+        });
+        return true;
+      }
+      catch(e){
+        return false;
+      }
+    }
 
 }
