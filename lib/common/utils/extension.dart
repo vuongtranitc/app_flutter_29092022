@@ -38,3 +38,12 @@ bool isNotEmpty(List<String> data) {
 String formatPrice(int price) {
   return NumberFormat("#,###", "en_US").format(price);
 }
+
+String formatDate(String date){
+  var inputFormat = DateFormat('yyyy-MM-dd');
+  var inputDate = inputFormat.parse(date); // <-- dd/MM 24H format
+
+  var outputFormat = DateFormat('dd/MM/yyyy');
+  var outputDate = outputFormat.format(inputDate);
+  return outputDate.toString();
+}

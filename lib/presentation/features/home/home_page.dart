@@ -8,6 +8,7 @@ import 'package:appp_sale_29092022/data/datasources/remote/api_request.dart';
 import 'package:appp_sale_29092022/data/model/product.dart';
 import 'package:appp_sale_29092022/data/repositories/product_repository.dart';
 import 'package:appp_sale_29092022/presentation/features/cart/cart_page.dart';
+import 'package:appp_sale_29092022/presentation/features/cart_history/cart_history_page.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_bloc.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_event.dart';
 import 'package:flutter/material.dart';
@@ -66,24 +67,30 @@ class _HomeContainerState extends State<HomeContainer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text("Foods App"),
-        ),
+        title: Text("Foods"),
         actions: [
           Stack(
             children: [
-              IconButton(
-                onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()))
-                  .then((value) {
-                    bloc.eventSink.add(LoadCartOnAppbar());
-                    bloc.loadingSink.add(true);
-                    Future.delayed(const Duration(seconds: 1), (){
-                      bloc.loadingSink.add(false);
-                    });
-                  });
-                },
-                icon: const Icon(Icons.shopping_cart, color: Colors.orange,),
+              Row(
+                children: [
+                  IconButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const CartHistoryPage()));
+                  },
+                      icon: const Icon(Icons.save_as_outlined,color: Colors.yellowAccent,)),
+                  IconButton(
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CartPage()))
+                          .then((value) {
+                        bloc.eventSink.add(LoadCartOnAppbar());
+                        bloc.loadingSink.add(true);
+                        Future.delayed(const Duration(seconds: 1), (){
+                          bloc.loadingSink.add(false);
+                        });
+                      });
+                    },
+                    icon: const Icon(Icons.shopping_cart, color: Colors.orange,),
+                  ),
+                ],
               ),
               Positioned(
                   right: 30,
@@ -103,7 +110,8 @@ class _HomeContainerState extends State<HomeContainer> {
                           return const Text("");
                       }
                     },)
-              )
+              ),
+
             ],
           )
         ],
@@ -137,7 +145,7 @@ class _HomeContainerState extends State<HomeContainer> {
       height: 135,
       child: Card(
         elevation: 5,
-        shadowColor: Colors.blueGrey,
+        shadowColor: Colors.white,
         child: Container(
           padding: const EdgeInsets.only(top: 5, bottom: 5),
           child: Row(

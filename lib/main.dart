@@ -1,6 +1,7 @@
 import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
 import 'package:appp_sale_29092022/presentation/features/cart/cart_comform.dart';
 import 'package:appp_sale_29092022/presentation/features/cart/cart_page.dart';
+import 'package:appp_sale_29092022/presentation/features/cart_history/cart_history_page.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_page.dart';
 import 'package:appp_sale_29092022/presentation/features/sign_in/sign_in_page.dart';
 import 'package:appp_sale_29092022/presentation/features/sign_up/sign_up_page.dart';
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
         "sign-up": (context) => SignUpPage(),
         "splash": (context) => const SplashPage(),
         "home": (context) => const HomePage(),
-        "cart-conform": (context) => const CartConform()
+        "cart-conform": (context) => const CartConform(),
+        "cart-history": (context) => const CartHistoryPage()
       },
       initialRoute: "splash",
     );

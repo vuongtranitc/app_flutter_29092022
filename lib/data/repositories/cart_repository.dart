@@ -1,5 +1,6 @@
 import 'package:appp_sale_29092022/common/constants/variable_constant.dart';
 import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
+import 'package:appp_sale_29092022/data/model/cart_history_model.dart';
 import 'package:appp_sale_29092022/data/model/cart_result_model.dart';
 import 'package:dio/dio.dart';
 
@@ -103,5 +104,24 @@ class CartRepository {
         return false;
       }
     }
+
+  Future<List<CartHistoryData>> fetchCartHistory() async{
+    String apiUrl ="${VariableConstant.apiUrl}/order/history";
+    String token = AppCache.getString(VariableConstant.TOKEN);
+    _dio.options.headers["Authorization"] = "Bearer $token";
+    try {
+      // TODO: Improve use Isolate
+      List<CartHistoryData> res = [];
+      Response response =  await _dio.post(apiUrl);
+      if(response.data["result"] == 1){
+        var cartHistory = CartHistory.fromJson(response.data);
+        res = cartHistory.data ?? [];
+      }
+      return res;
+    } catch(e) {
+      return [];
+    }
+  }
+
 
 }
