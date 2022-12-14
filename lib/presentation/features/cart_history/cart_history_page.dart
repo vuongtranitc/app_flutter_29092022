@@ -3,6 +3,7 @@ import 'package:appp_sale_29092022/common/widgets/loading_widget.dart';
 import 'package:appp_sale_29092022/data/model/cart_history_model.dart';
 import 'package:appp_sale_29092022/presentation/features/cart_history/cart_history_bloc.dart';
 import 'package:appp_sale_29092022/presentation/features/cart_history/cart_history_event.dart';
+import 'package:appp_sale_29092022/presentation/features/cart_history_detail/cart_history_detail_page.dart';
 import 'package:appp_sale_29092022/presentation/features/home/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -53,6 +54,9 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
     return StreamBuilder<List<CartHistoryData>>(
       stream: bloc.cartHistoryStream,
       builder: (context, snapshot) {
+        if(snapshot.data?.length==0){
+          return _notHasOrder();
+        }
         return Stack(
           children: [
             Container(
@@ -66,7 +70,7 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
             LoadingWidget(child: Container(), bloc: bloc)
           ],
         );
-      },
+      }
     );
   }
 
@@ -79,7 +83,7 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
         elevation: 2,
         shadowColor: Colors.white,
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -89,7 +93,7 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(cartHistory.dateCreated == null ? "" : formatDate(cartHistory.dateCreated.toString())),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
                       Text("Tổng tiền: ${formatPrice(cartHistory?.price ?? 0)} VND")
                     ],
                   )
@@ -103,13 +107,23 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton(onPressed: (){},
+                          TextButton(onPressed: (){
+                            //Navigator.push(context, MaterialPageRoute(builder: (context) => CartHistoryDetailPage()));
+                            Navigator.pushNamed(
+                              context,
+                              "cart-history-detail",
+                              arguments: {
+                                'products': cartHistory.products,
+                                'totalPrice': cartHistory.price
+                              },
+                            );
+                          },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Row(
-                                children: [
+                                children: const [
                                   Icon(Icons.keyboard_arrow_right),
                                   Text("Chi tiết")
                                 ],
@@ -126,6 +140,26 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
             )
           ),
         ),
+    );
+  }
+
+  Widget _notHasOrder(){
+    return Stack(
+      children: [
+        Center(
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children:  [
+                const Text("Đơn hàng hiện tại đang trống", style:TextStyle(fontSize: 16),),
+                const SizedBox(height: 10,),
+                Image.asset("assets/images/img-cart-empty.png", fit: BoxFit.cover,)
+              ],
+            ),
+          ),
+        ),
+        LoadingWidget(child: Container(), bloc: bloc)
+      ]
     );
   }
 

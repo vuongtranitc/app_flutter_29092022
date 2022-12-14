@@ -14,6 +14,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class CartPage extends StatefulWidget {
+
   const CartPage({Key? key}) : super(key: key);
 
   @override
