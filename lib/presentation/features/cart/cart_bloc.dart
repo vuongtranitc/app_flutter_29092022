@@ -28,7 +28,8 @@ class CartBloc extends BaseBloc{
   void dispatch(BaseEvent event) {
     switch(event.runtimeType){
       case GetCartEvent:
-        _getCart();
+        //_getCart();
+        _getCartUseCompute();
         break;
       case UpdateItemCartEvent:
         _updateCart(event as UpdateItemCartEvent);
@@ -56,6 +57,28 @@ class CartBloc extends BaseBloc{
   void _getCart() async{
     loadingSink.add(true);
     var products = _repo.getCartProducts();
+
+    products.then((res) {
+      int totalMoney=0;
+      List<Products> prods = res;
+      if(prods.isNotEmpty){
+        for(var i=0; i<prods.length;i++){
+          totalMoney += (prods[i].price ?? 0) * (prods[i].quantity ?? 0);
+        }
+      }
+      _productsStreamController.sink.add(res);
+      _totalCartStreamController.sink.add(totalMoney);
+      loadingSink.add(false);
+    },
+        onError: (err) {
+          messageSink.add(err.toString());
+          loadingSink.add(false);
+        });
+  }
+
+  void _getCartUseCompute() async{
+    loadingSink.add(true);
+    var products = _repo.getCartProductsCompute();
 
     products.then((res) {
       int totalMoney=0;

@@ -6,6 +6,7 @@ import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
 import 'package:appp_sale_29092022/data/model/cart_history_model.dart';
 import 'package:appp_sale_29092022/data/model/cart_result_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class CartRepository {
 
@@ -53,6 +54,30 @@ class CartRepository {
     } catch(e) {
       return [];
     }
+  }
+
+  // Improve func getCartProducts with compute
+  Future<List<Products>> getCartProductsCompute() async{
+    String apiUrl = "${VariableConstant.apiUrl}/cart";
+    String token = AppCache.getString(VariableConstant.TOKEN);
+    _dio.options.headers["Authorization"] = "Bearer $token";
+    try {
+
+      final response =  await _dio.get(apiUrl);
+
+      if(response.data["result"] != 1){
+          return [];
+      }
+      return compute(parseCartProducts, response.data["data"]);
+
+    } catch(e) {
+      return [];
+    }
+  }
+
+  static List<Products> parseCartProducts(dynamic param){
+    CartData cartData = CartData.fromJson(param);
+    return cartData.products ?? [];
   }
 
   Future<String> addToCart(String product_id) async{
@@ -133,6 +158,9 @@ class CartRepository {
     _dio.options.headers["Authorization"] = "Bearer $token";
     try{
       Response response =  await _dio.post(apiUrl);
+      if(response.data["result"] != 1){
+        return [];
+      }
       ReceivePort receivePort = ReceivePort();
       final isolate = await Isolate.spawn(parseCartHistoryData,[receivePort.sendPort , response.data]);
       List<CartHistoryData> res = await receivePort.first;
