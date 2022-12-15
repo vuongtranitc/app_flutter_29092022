@@ -51,7 +51,7 @@ class _CartHistoryContainerState extends State<_CartHistoryContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<CartHistoryData>>(
+    return StreamBuilder<List<dynamic>>(
       stream: bloc.cartHistoryStream,
       builder: (context, snapshot) {
         if(snapshot.data?.length==0){

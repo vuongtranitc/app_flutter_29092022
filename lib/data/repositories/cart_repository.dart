@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:isolate';
+
 import 'package:appp_sale_29092022/common/constants/variable_constant.dart';
 import 'package:appp_sale_29092022/data/datasources/local/cache/app_cache.dart';
 import 'package:appp_sale_29092022/data/model/cart_history_model.dart';
@@ -121,6 +124,31 @@ class CartRepository {
     } catch(e) {
       return [];
     }
+  }
+
+  // Improve use Isolate.spawn
+  Future<List<CartHistoryData>> getCartHistoryList() async{
+    String apiUrl ="${VariableConstant.apiUrl}/order/history";
+    String token = AppCache.getString(VariableConstant.TOKEN);
+    _dio.options.headers["Authorization"] = "Bearer $token";
+    try{
+      Response response =  await _dio.post(apiUrl);
+      ReceivePort receivePort = ReceivePort();
+      final isolate = await Isolate.spawn(parseCartHistoryData,[receivePort.sendPort , response.data]);
+      List<CartHistoryData> res = await receivePort.first;
+      isolate.kill(priority: Isolate.immediate);
+      return res;
+    }
+    catch (e){
+      return [];
+    }
+  }
+
+  static void parseCartHistoryData(List<dynamic> param) {
+    SendPort sendPort = param[0];
+    var cartHistory = CartHistory.fromJson(param[1]);
+    var sendData = cartHistory.data ?? [];
+    sendPort.send(sendData);
   }
 
 
